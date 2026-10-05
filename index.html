@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desarrollo - MFE Catálogo</title>
+  <!-- Simulamos el CSS global que inyectaría el App Shell de Walter -->
+  <style>
+    :root {
+      --agro-primario: #2e7d32;
+      --agro-secundario: #fbc02d;
+      --agro-fuente: 'Inter', sans-serif;
+      --agro-fondo: #f9fafb;
+      --agro-espaciado-md: 16px;
+    }
+    body {
+      font-family: var(--agro-fuente);
+      background-color: var(--agro-fondo);
+      margin: 0;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Entorno de Desarrollo: MFE Catálogo</h1>
+  <p>Abierto en entorno de pruebas local aislado del App Shell.</p>
+  
+  <!-- El contenedor donde se montará el MFE -->
+  <div id="mfe-catalogo-root"></div>
+
+  <!-- Cargamos el main.js local -->
+  <script type="module" src="./main.js"></script>
+
+  <script>
+    // Simulamos que somos el App Shell orquestando el montaje
+    setTimeout(() => {
+      if (window.mountAgroCatalogo) {
+        window.mountAgroCatalogo('mfe-catalogo-root', { bffUrl: 'https://mock.api/public' });
+      }
+    }, 500);
+  </script>
+</body>
+</html>

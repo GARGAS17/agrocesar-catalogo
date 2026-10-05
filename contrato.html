@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Pruebas Catálogo</title>
+  <style>
+    body { font-family: sans-serif; background: #fafafa; padding: 20px; }
+    #mfe-test-root { border: 2px dashed #ccc; padding: 20px; background: white; margin-top: 20px; }
+    .success { color: green; font-weight: bold; }
+    .error { color: red; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Prueba Aislada del MFE Catálogo (contrato.html)</h1>
+  <p>Este archivo prueba que el MFE cumple los contratos de montaje y eventos sin necesitar al App Shell.</p>
+  
+  <div id="mfe-test-root"></div>
+  <ul id="test-results" style="margin-top:20px;"></ul>
+
+  <!-- Cargar el MFE como módulo -->
+  <script type="module" src="./main.js"></script>
+
+  <script>
+    const addResult = (text, isSuccess) => {
+      const li = document.createElement('li');
+      li.className = isSuccess ? 'success' : 'error';
+      li.textContent = text;
+      document.getElementById('test-results').appendChild(li);
+    }
+
+    setTimeout(() => {
+      console.log("⏳ Iniciando pruebas de contrato...");
+
+      // PRUEBA 1: Verificar que la función global existe
+      const hasMount = typeof window.mountAgroCatalogo === 'function';
+      console.assert(hasMount, "❌ Fallo: mountAgroCatalogo no es una función");
+      addResult(hasMount ? "✅ Prueba 1: mountAgroCatalogo existe en window" : "❌ Prueba 1: Fallo al encontrar mount", hasMount);
+
+      // PRUEBA 2: Verificar Montaje
+      window.mountAgroCatalogo('mfe-test-root', { bffUrl: 'https://mock.api' });
+      
+      setTimeout(() => {
+        const container = document.getElementById('mfe-test-root');
+        const isMounted = container.innerHTML.includes('Catálogo de la Región');
+        console.assert(isMounted, "❌ Fallo: El componente no renderizó");
+        addResult(isMounted ? "✅ Prueba 2: El componente se montó correctamente en el DOM" : "❌ Prueba 2: Fallo al montar en el DOM", isMounted);
+
+        // PRUEBA 3: Verificar Desmontaje
+        window.unmountAgroCatalogo('mfe-test-root');
+        const isUnmounted = container.innerHTML === '';
+        console.assert(isUnmounted, "❌ Fallo: El desmontaje no limpió el DOM");
+        addResult(isUnmounted ? "✅ Prueba 3: El componente se desmontó y limpió el DOM perfectamente" : "❌ Prueba 3: Fallo al desmontar", isUnmounted);
+
+      }, 500); // Dar un poco de tiempo para que Preact renderice
+    }, 1000); // Dar tiempo al script type module de cargar
+  </script>
+</body>
+</html>
