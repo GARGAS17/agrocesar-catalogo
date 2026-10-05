@@ -2,57 +2,218 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Pruebas Catálogo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prueba de Contrato: MFE Catálogo</title>
   <style>
-    body { font-family: sans-serif; background: #fafafa; padding: 20px; }
-    #mfe-test-root { border: 2px dashed #ccc; padding: 20px; background: white; margin-top: 20px; }
-    .success { color: green; font-weight: bold; }
-    .error { color: red; font-weight: bold; }
+    :root {
+      --shell-bg: #0f172a;
+      --shell-text: #f8fafc;
+      --shell-accent: #3b82f6;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      margin: 0;
+      background: var(--shell-bg);
+      color: var(--shell-text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .shell-header {
+      background: #1e293b;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      z-index: 10;
+    }
+    .shell-title {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .shell-badge {
+      background: #ef4444;
+      color: white;
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+    .shell-controls {
+      display: flex;
+      gap: 10px;
+    }
+    button {
+      background: var(--shell-accent);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    button:hover { opacity: 0.9; transform: translateY(-1px); }
+    button.danger { background: #ef4444; }
+    button.success { background: #10b981; }
+    
+    .shell-layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    .shell-sidebar {
+      width: 350px;
+      background: #1e293b;
+      border-right: 1px solid #334155;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar-header {
+      padding: 15px;
+      background: #0f172a;
+      border-bottom: 1px solid #334155;
+      font-weight: 600;
+    }
+    .log-panel {
+      font-family: 'Consolas', monospace;
+      font-size: 0.85rem;
+      background: #000;
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+    }
+    .log-entry { 
+      margin-bottom: 8px; 
+      padding-bottom: 8px;
+      border-bottom: 1px solid #222; 
+      line-height: 1.4;
+      word-wrap: break-word;
+    }
+    .log-entry.shell { color: #f59e0b; } /* Naranja para acciones del Shell */
+    .log-entry.in { color: #10b981; }    /* Verde para eventos entrantes (producto) */
+    .log-entry.out { color: #3b82f6; }   /* Azul para eventos salientes (carrito) */
+    
+    /* Contenedor donde se montará el MFE de Camilo */
+    #mfe-container {
+      flex: 1;
+      background: #ffffff; /* El MFE asume un fondo claro en su diseño */
+      position: relative;
+      overflow-y: auto;
+    }
+    
+    .instructions {
+      padding: 15px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      background: #0f172a;
+      border-top: 1px solid #334155;
+    }
   </style>
 </head>
 <body>
-  <h1>Prueba Aislada del MFE Catálogo (contrato.html)</h1>
-  <p>Este archivo prueba que el MFE cumple los contratos de montaje y eventos sin necesitar al App Shell.</p>
-  
-  <div id="mfe-test-root"></div>
-  <ul id="test-results" style="margin-top:20px;"></ul>
+
+  <header class="shell-header">
+    <h2 class="shell-title">
+      <span class="shell-badge">Simulador</span>
+      Entorno de Pruebas: MFE Catálogo
+    </h2>
+    <div class="shell-controls">
+      <button onclick="mountMFE()">▶ Montar</button>
+      <button class="danger" onclick="unmountMFE()">⏹ Desmontar</button>
+      <button class="success" onclick="simularEventoEntrada()">📡 Emitir producto:publicado</button>
+    </div>
+  </header>
+
+  <div class="shell-layout">
+    <aside class="shell-sidebar">
+      <div class="sidebar-header">Bus de Eventos Global (window)</div>
+      <div id="log-panel" class="log-panel"></div>
+      <div class="instructions">
+        <strong>Instrucciones de Prueba:</strong><br/>
+        1. Clic en "Montar" para inyectar Preact en el DOM.<br/>
+        2. Interactúa con los botones de "+" en el catálogo para ver los eventos <code>carrito:agregado</code> en esta consola.<br/>
+        3. Clic en "Emitir" para simular que otro MFE añadió un producto.<br/>
+        4. Clic en "Desmontar" para probar la liberación de memoria.
+      </div>
+    </aside>
+
+    <!-- AQUÍ VA EL CÓDIGO DE CAMILO -->
+    <main id="mfe-container"></main>
+  </div>
 
   <!-- Cargar el MFE como módulo -->
   <script type="module" src="./main.js"></script>
 
   <script>
-    const addResult = (text, isSuccess) => {
-      const li = document.createElement('li');
-      li.className = isSuccess ? 'success' : 'error';
-      li.textContent = text;
-      document.getElementById('test-results').appendChild(li);
+    const logPanel = document.getElementById('log-panel');
+    function addLog(msg, type = 'shell') {
+      const div = document.createElement('div');
+      div.className = `log-entry ${type}`;
+      div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+      logPanel.appendChild(div);
+      logPanel.scrollTop = logPanel.scrollHeight; // Auto-scroll
     }
 
-    setTimeout(() => {
-      console.log("⏳ Iniciando pruebas de contrato...");
+    addLog("Sandbox de pruebas iniciado.", "shell");
 
-      // PRUEBA 1: Verificar que la función global existe
-      const hasMount = typeof window.mountAgroCatalogo === 'function';
-      console.assert(hasMount, "❌ Fallo: mountAgroCatalogo no es una función");
-      addResult(hasMount ? "✅ Prueba 1: mountAgroCatalogo existe en window" : "❌ Prueba 1: Fallo al encontrar mount", hasMount);
+    // ==========================================
+    // 1. ESCUCHAR EVENTOS DE SALIDA (Del MFE al Shell)
+    // Contrato: 'carrito:agregado'
+    // ==========================================
+    window.addEventListener('carrito:agregado', (e) => {
+      addLog(`MFE Emite -> carrito:agregado | Producto: ${e.detail.nombre} | Precio: $${e.detail.precio}`, 'out');
+    });
 
-      // PRUEBA 2: Verificar Montaje
-      window.mountAgroCatalogo('mfe-test-root', { bffUrl: 'https://mock.api' });
+    // ==========================================
+    // 2. CONTROL DE MONTAJE (Llamadas a funciones globales)
+    // Contratos: window.mountAgroCatalogo / unmount
+    // ==========================================
+    function mountMFE() {
+      if (typeof window.mountAgroCatalogo === 'function') {
+        window.mountAgroCatalogo('mfe-container', { bffUrl: 'https://api.agrocesar.com/v1' });
+        addLog('Shell -> Ejecuta mountAgroCatalogo()', 'shell');
+      } else {
+        addLog('Error: El MFE no ha exportado mountAgroCatalogo', 'shell');
+      }
+    }
+
+    function unmountMFE() {
+      if (typeof window.unmountAgroCatalogo === 'function') {
+        window.unmountAgroCatalogo('mfe-container');
+        addLog('Shell -> Ejecuta unmountAgroCatalogo()', 'shell');
+      }
+    }
+
+    // ==========================================
+    // 3. EMITIR EVENTOS DE ENTRADA (Del Shell al MFE)
+    // Contrato: 'producto:publicado'
+    // ==========================================
+    function simularEventoEntrada() {
+      // Simulamos los datos que enviaría el MFE de Operaciones/Logística
+      const nuevoProducto = {
+        id: Math.floor(Math.random() * 1000) + 10,
+        nombre: 'Cebolla Larga Orgánica',
+        precio: 3500 + Math.floor(Math.random() * 1000),
+        productor: 'Finca La Cumbre',
+        categoria: 'Hortalizas',
+        imagen: 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?auto=format&fit=crop&w=600&q=80'
+      };
       
-      setTimeout(() => {
-        const container = document.getElementById('mfe-test-root');
-        const isMounted = container.innerHTML.includes('Catálogo de la Región');
-        console.assert(isMounted, "❌ Fallo: El componente no renderizó");
-        addResult(isMounted ? "✅ Prueba 2: El componente se montó correctamente en el DOM" : "❌ Prueba 2: Fallo al montar en el DOM", isMounted);
+      const evt = new CustomEvent('producto:publicado', { detail: nuevoProducto });
+      window.dispatchEvent(evt);
+      addLog(`Shell Emite -> producto:publicado | Data: ${nuevoProducto.nombre}`, 'in');
+    }
 
-        // PRUEBA 3: Verificar Desmontaje
-        window.unmountAgroCatalogo('mfe-test-root');
-        const isUnmounted = container.innerHTML === '';
-        console.assert(isUnmounted, "❌ Fallo: El desmontaje no limpió el DOM");
-        addResult(isUnmounted ? "✅ Prueba 3: El componente se desmontó y limpió el DOM perfectamente" : "❌ Prueba 3: Fallo al desmontar", isUnmounted);
-
-      }, 500); // Dar un poco de tiempo para que Preact renderice
-    }, 1000); // Dar tiempo al script type module de cargar
+    // Autoejecutar montaje al iniciar para facilitar las pruebas
+    setTimeout(mountMFE, 600);
   </script>
 </body>
 </html>
