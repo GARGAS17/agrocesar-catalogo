@@ -4,17 +4,25 @@
 ============================================================ */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-/* ── Variables ─────────────────────────────────────────── */
+/* ── Variables ── */
+:root {
+  --agro-primario: #2e7d32;
+  --agro-secundario: #fbc02d;
+  --agro-fuente: 'Inter', sans-serif;
+  --agro-fondo: #f9fafb;
+  --agro-espaciado-md: 16px;
+}
+
 .agro-cat-wrapper {
-  --primary:      #10b981;
-  --primary-dark: #059669;
-  --accent:       #f59e0b;
+  --primary:      var(--agro-primario);
+  --primary-dark: var(--agro-primario);
+  --accent:       var(--agro-secundario);
   --text:         #1f2937;
   --text-light:   #6b7280;
   --glass-bg:     rgba(255,255,255,0.65);
   --glass-border: rgba(255,255,255,0.45);
 
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--agro-fuente);
   padding: 40px 24px 60px;
   min-height: 100vh;
 
@@ -24,7 +32,7 @@
     radial-gradient(at 100% 0%,   hsla(50, 100%,85%,1) 0px, transparent 50%),
     radial-gradient(at 100% 100%, hsla(140,100%,85%,1) 0px, transparent 50%),
     radial-gradient(at 0%   100%, hsla(50, 100%,85%,1) 0px, transparent 50%);
-  background-color: #f0fdf4;
+  background-color: var(--agro-fondo);
   background-size: 200% 200%;
   animation: meshBG 18s ease infinite;
 }
@@ -375,7 +383,7 @@
   padding: 13px 22px;
   border-radius: 12px;
   font-size: 0.9rem;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--agro-fuente);
   box-shadow: 0 6px 24px rgba(16,185,129,0.4);
   z-index: 9999;
   animation: toastIn 0.3s ease;
