@@ -23,8 +23,12 @@
   --glass-border: rgba(255,255,255,0.45);
 
   font-family: var(--agro-fuente);
-  padding: 40px 24px 60px;
-  min-height: 100vh;
+  padding: 40px 5% 60px;
+  min-height: calc(100vh - 64px);
+
+  /* Breakout: Forzar 100% del ancho ignorando el padding/container del Shell */
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
 
   /* Mesh gradient animado */
   background:
