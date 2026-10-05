@@ -1,54 +1,197 @@
-/* Prefijamos todo con agro-cat- para aislar los estilos de los otros MFEs */
-.agro-cat-container {
-  font-family: var(--agro-fuente, 'Inter', sans-serif);
-  padding: 10px;
+/* VARIABLES Y ESTILOS BASE */
+.agro-cat-wrapper {
+  --agro-cat-primary: #10b981;
+  --agro-cat-primary-dark: #059669;
+  --agro-cat-accent: #f59e0b;
+  --agro-cat-text: #1f2937;
+  --agro-cat-text-light: #6b7280;
+  --agro-cat-bg: rgba(255, 255, 255, 0.6);
+  --agro-cat-glass-border: rgba(255, 255, 255, 0.4);
+  
+  font-family: var(--agro-fuente, 'Inter', system-ui, -apple-system, sans-serif);
+  padding: 40px 20px;
+  min-height: 100vh;
+  /* Fondo animado moderno (Mesh Gradient) */
+  background: radial-gradient(at 0% 0%, hsla(147, 100%, 86%, 1) 0px, transparent 50%),
+              radial-gradient(at 100% 0%, hsla(50, 100%, 85%, 1) 0px, transparent 50%),
+              radial-gradient(at 100% 100%, hsla(140, 100%, 85%, 1) 0px, transparent 50%),
+              radial-gradient(at 0% 100%, hsla(50, 100%, 85%, 1) 0px, transparent 50%);
+  background-color: #f8fafc;
+  background-size: 200% 200%;
+  animation: gradientBG 15s ease infinite;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.agro-cat-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.agro-cat-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--agro-cat-text);
+  margin-bottom: 8px;
+  letter-spacing: -0.025em;
+}
+
+.agro-cat-subtitle {
+  color: var(--agro-cat-text-light);
+  font-size: 1.1rem;
 }
 
 .agro-cat-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--agro-espaciado-md, 16px);
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
+/* GLASSMORPHISM CARDS */
 .agro-cat-card {
-  background: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  transition: transform 0.2s;
+  background: var(--agro-cat-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--agro-cat-glass-border);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  flex-direction: column;
 }
 
 .agro-cat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
 }
 
-.agro-cat-card h3 {
-  margin: 0 0 8px 0;
-  font-size: 1.1rem;
-}
-
-.agro-cat-precio {
-  font-weight: bold;
-  color: var(--agro-primario, #2e7d32);
-  margin: 4px 0;
-  font-size: 1.2rem;
-}
-
-.agro-cat-btn {
-  background-color: var(--agro-secundario, #fbc02d);
-  color: #333;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
+/* IMAGEN DEL PRODUCTO */
+.agro-cat-image-container {
   width: 100%;
-  margin-top: 12px;
-  transition: background-color 0.2s;
+  height: 220px;
+  overflow: hidden;
+}
+
+.agro-cat-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.agro-cat-card:hover .agro-cat-image {
+  transform: scale(1.08);
+}
+
+/* CONTENIDO DE LA TARJETA */
+.agro-cat-content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.agro-cat-tag {
+  align-self: flex-start;
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--agro-cat-primary-dark);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  margin-bottom: 12px;
+  letter-spacing: 0.05em;
+}
+
+.agro-cat-name {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--agro-cat-text);
+  margin: 0 0 8px 0;
+  line-height: 1.2;
+}
+
+.agro-cat-producer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--agro-cat-text-light);
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+.agro-cat-producer svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.agro-cat-footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.agro-cat-price-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.agro-cat-price-label {
+  font-size: 0.75rem;
+  color: var(--agro-cat-text-light);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.agro-cat-price {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--agro-cat-text);
+}
+
+/* BOTÓN PREMIUM */
+.agro-cat-btn {
+  background: var(--agro-cat-primary);
+  color: white;
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+}
+
+.agro-cat-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: white;
+  transition: transform 0.3s ease;
 }
 
 .agro-cat-btn:hover {
-  background-color: #f9a825;
+  background: var(--agro-cat-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.agro-cat-btn:hover svg {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+.agro-cat-btn:active {
+  transform: translateY(1px);
 }
